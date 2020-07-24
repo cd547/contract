@@ -22,12 +22,26 @@ namespace 合同管理
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //backup();
             showcontractdetailtable("");
             showcontractname();
             panel1.Visible = false;
             this.button13.Enabled = false;
+            this.button18.Enabled = false;
 
         }
+
+        public void backup(string events)
+        {
+            if (File.Exists(@"contract.db"))
+            {
+                MessageBox.Show(events);
+                string NewFileName = @"dbback\contract_"+ events+"_" + DateTime.Now.ToString("yyyyMMddHHmmss").ToString()+".db";
+                   
+                   File.Copy(@"contract.db", NewFileName);
+            }
+        }
+
         static void CreateDB()
         {
             string path = @"contract.db";
@@ -105,7 +119,7 @@ namespace 合同管理
         }
 
         //contract_name TEXT NOT NULL,creattime VARCHAR(18) NOT NULL,url VARCHAR(255) NOT NULL,return BLOB NOT NULL,returnurl VARCHAR(255) NOT NULL ,returntime VARCHAR(18)
-        static void InsertContractdetailRow(string contract_name, string creattime, string url,int returned, string returnurl,string returntime)
+        static void InsertContractdetailRow(string contract_name, string creattime, string url,int returned, string returnurl,string returntime,string linkname)
         {
             string path = @"contract.db";
             SQLiteConnection cn = new SQLiteConnection("data source=" + path);
@@ -114,13 +128,14 @@ namespace 合同管理
                 cn.Open();
                 SQLiteCommand cmd = new SQLiteCommand();
                 cmd.Connection = cn;
-                cmd.CommandText = "INSERT INTO contract_detail(contract_name,creattime,url,return,returnurl,returntime) VALUES(@contract_name,@creattime,@url,@return,@returnurl,@returntime)";
+                cmd.CommandText = "INSERT INTO contract_detail(contract_name,creattime,url,return,returnurl,returntime,linkname) VALUES(@contract_name,@creattime,@url,@return,@returnurl,@returntime,@linkname)";
                 cmd.Parameters.Add("contract_name", DbType.String).Value = contract_name;
                 cmd.Parameters.Add("creattime", DbType.String).Value = creattime;
                 cmd.Parameters.Add("url", DbType.String).Value = url;
                 cmd.Parameters.Add("return", DbType.Int32).Value = returned;
                 cmd.Parameters.Add("returnurl", DbType.String).Value = returnurl;
                 cmd.Parameters.Add("returntime", DbType.String).Value = returntime;
+                cmd.Parameters.Add("linkname", DbType.String).Value = linkname;
                 cmd.ExecuteNonQuery();
             }
             cn.Close();
@@ -217,6 +232,26 @@ namespace 合同管理
                 cmd.Parameters.Add("returntime", DbType.String).Value = return_time;
                 cmd.Parameters.Add("money", DbType.Decimal).Value = money;
                 cmd.Parameters.Add("money1", DbType.Decimal).Value = money1;
+                returnnum = cmd.ExecuteNonQuery();
+                //MessageBox.Show(cmd.CommandText);
+            }
+            cn.Close();
+            return returnnum;
+        }
+
+        public int contractcanceled(string contract_name)
+        {
+            int res = 0;
+            int returnnum = 0;
+            string path = @"contract.db";
+            SQLiteConnection cn = new SQLiteConnection("data source=" + path);
+            if (cn.State != System.Data.ConnectionState.Open)
+            {
+                cn.Open();
+                SQLiteCommand cmd = new SQLiteCommand();
+                cmd.Connection = cn;
+                cmd.CommandText = "UPDATE contract_detail SET cancel=@cancel WHERE contract_name='" + contract_name + "'";
+                cmd.Parameters.Add("cancel", DbType.Int32).Value = 1;
                 returnnum = cmd.ExecuteNonQuery();
                 //MessageBox.Show(cmd.CommandText);
             }
@@ -326,8 +361,8 @@ namespace 合同管理
             dc = dt.Columns.Add("归档时间", Type.GetType("System.String"));
             dc = dt.Columns.Add("合同金额", Type.GetType("System.Decimal"));
             dc = dt.Columns.Add("已交金额", Type.GetType("System.Decimal"));
-            
-
+            dc = dt.Columns.Add("取消", Type.GetType("System.Int32"));
+            dc = dt.Columns.Add("关联文件", Type.GetType("System.String"));
             string path = @"contract.db";
             SQLiteConnection cn = new SQLiteConnection("data source=" + path);
             if (cn.State != System.Data.ConnectionState.Open)
@@ -338,10 +373,10 @@ namespace 合同管理
                 //查询第1条记录，这个并不保险,rowid 并不是连续的，只是和当时插入有关
                 cmd.CommandText = "";
                 if (searchtxt == "")
-                { cmd.CommandText = "SELECT * FROM contract_detail ORDER BY creattime DESC;"; }
+                { cmd.CommandText = "SELECT * FROM contract_detail WHERE cancel=0 ORDER BY creattime DESC;"; }
                 else
                 {
-                    cmd.CommandText = "SELECT * FROM contract_detail " + searchtxt+ " ORDER BY creattime DESC;";
+                    cmd.CommandText = "SELECT * FROM contract_detail " + searchtxt+ " and cancel=0 ORDER BY creattime DESC;";
                 }
                 try
                 {
@@ -360,6 +395,8 @@ namespace 合同管理
                             dr["归档时间"] = sr.GetValue(5);
                             dr["合同金额"] = sr.GetValue(6);
                             dr["已交金额"] = sr.GetValue(7);
+                            dr["取消"] = sr.GetInt32(8);
+                            dr["关联文件"] = sr.GetString(9);
                             dt.Rows.Add(dr);
                         }
 
@@ -403,7 +440,9 @@ namespace 合同管理
                     MessageBox.Show("合同模板" + this.comboBox3.Text + "已经存在");
                 }
             }
-            
+            showcontractname();
+
+
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -429,34 +468,76 @@ namespace 合同管理
 
         private void button7_Click(object sender, EventArgs e)
         {
+           
             if (this.comboBox2.Text == "")
             {
                 MessageBox.Show("请选择合同类型");
                 return;
             }
+            backup("创建"+ this.comboBox1.Text + "合同");
             DialogResult dr = MessageBox.Show("你确定要创建"+ this.comboBox1.Text + "合同吗？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
             if (dr == DialogResult.OK)
             {
-                //确定
-                DateTime dt = DateTime.Now;
+                if (this.comboBox1.Text == "嘉兴爱阁家政服务有限公司月子护理服务协议" || this.comboBox1.Text == "月拇指母婴服务委托服务协议")
+                {
+                    //本合同
+                    DateTime dt = DateTime.Now;
 
-                AsposeWordHelper helper = new AsposeWordHelper();
+                    AsposeWordHelper helper = new AsposeWordHelper();
 
-                string templatePath = this.comboBox2.Text;  //模板路径
-                helper.OpenTempelte(templatePath); //打开模板文件
-                string FileName = "contractoutput/" + this.comboBox1.Text + ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() + ".pdf";//保存路径
-                                                                                                                                                                      //MessageBox.Show(FileName);
-                string[] fieldNames = new string[] { "contractNum" };
-                object[] fieldValues = new object[] { ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() };
-                helper.Executefield(fieldNames, fieldValues);//域赋值
-                helper.SavePdf(FileName); //文件保存，保存为pdf
-                int effectrosnum = addmaxnum(this.comboBox1.Text);
+                    string templatePath = this.comboBox2.Text;  //模板路径
+                    helper.OpenTempelte(templatePath); //打开模板文件
+                    string FileName = "contractoutput/" + this.comboBox1.Text + ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() + ".pdf";//保存路径
+                                                                                                                                                                          //MessageBox.Show(FileName);
+                    string[] fieldNames = new string[] { "contractNum" };
+                    object[] fieldValues = new object[] { ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() };
+                    helper.Executefield(fieldNames, fieldValues);//域赋值
+                    helper.SavePdf(FileName); //文件保存，保存为pdf
+                    int effectrosnum = addmaxnum(this.comboBox1.Text);
 
-                this.label1.Text = selectmaxnum(this.comboBox1.Text).ToString();
-                //
-                InsertContractdetailRow(FileName.Split('/')[1], dt.ToString(), FileName, 0, null, null);
+                    this.label1.Text = selectmaxnum(this.comboBox1.Text).ToString();
+                    //获取关联合同的名字
+                    string FileName1 = "助邦母婴护理师委托服务合同" + ((202000 + dt.Month) * 10000 + selectmaxnum("助邦母婴护理师委托服务合同") + 1).ToString() + ".pdf";
 
-                showcontractdetailtable("");
+                    InsertContractdetailRow(FileName.Split('/')[1], dt.ToString(), FileName, 0, null, null, FileName1);
+                    //关联合同
+                    templatePath = @"temple\助邦母婴护理师委托服务合同\助邦母婴护理师委托服务合同.docx";
+                    helper.OpenTempelte(templatePath); //打开模板文件
+                    string[] fieldNames1 = new string[] { "contractNum", "contractNum1" };
+                    object[] fieldValues1 = new object[] { ((202000 + dt.Month) * 10000 + selectmaxnum("助邦母婴护理师委托服务合同") + 1).ToString(), FileName.Split('/')[1] };
+                    helper.Executefield(fieldNames1, fieldValues1);//域赋值
+                    helper.SavePdf("contractoutput/"+FileName1); //文件保存，保存为pdf
+                    addmaxnum("助邦母婴护理师委托服务合同");
+                    InsertContractdetailRow(FileName1, dt.ToString(), "contractoutput/"+FileName1, 0, null, null, FileName.Split('/')[1]);
+                }
+                else {
+                    //确定
+                    DateTime dt = DateTime.Now;
+
+                    AsposeWordHelper helper = new AsposeWordHelper();
+
+                    string templatePath = this.comboBox2.Text;  //模板路径
+                    helper.OpenTempelte(templatePath); //打开模板文件
+                    string FileName = "contractoutput/" + this.comboBox1.Text + ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() + ".pdf";//保存路径
+                                                                                                                                                                          //MessageBox.Show(FileName);
+                    string[] fieldNames = new string[] { "contractNum" };
+                    object[] fieldValues = new object[] { ((202000 + dt.Month) * 10000 + selectmaxnum(this.comboBox1.Text) + 1).ToString() };
+                    helper.Executefield(fieldNames, fieldValues);//域赋值
+                    helper.SavePdf(FileName); //文件保存，保存为pdf
+                    int effectrosnum = addmaxnum(this.comboBox1.Text);
+
+                    this.label1.Text = selectmaxnum(this.comboBox1.Text).ToString();
+                    //
+                    InsertContractdetailRow(FileName.Split('/')[1], dt.ToString(), FileName, 0, null, null," ");
+
+                }
+                string sqltxt = "";
+                if (this.comboBox1.Text != "")
+                {
+                    sqltxt = "WHERE contract_name LIKE '" + this.comboBox1.Text + "%' ";
+                }
+                showcontractdetailtable(sqltxt);
+                
             }
            
         }
@@ -480,6 +561,7 @@ namespace 合同管理
         public string openurl = "";
         public string printurl = "";
         public string filename = "";
+        public string link = "";
 
         private void dataGridView2_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -494,7 +576,7 @@ namespace 合同管理
 
             filename = this.dataGridView2.Rows[e.RowIndex].Cells[0].Value.ToString();
             printurl = this.dataGridView2.Rows[e.RowIndex].Cells[2].Value.ToString();
-
+            link= this.dataGridView2.Rows[e.RowIndex].Cells[9].Value.ToString();
             if (this.dataGridView2.Rows[e.RowIndex].Cells[3].Value.ToString() == "0")
             {
                 //未归档
@@ -509,6 +591,14 @@ namespace 合同管理
                 this.button13.Enabled = false;
                 openurl = this.dataGridView2.Rows[e.RowIndex].Cells[4].Value.ToString();
                 
+            }
+            if (link.Length > 0&&link!=" ")
+            {
+                this.button18.Enabled = true;
+            }
+            else
+            {
+                this.button18.Enabled =false;
             }
 
             this.label2.Text = "文件名："+ filename +" 打印路径："+ printurl+" 打开路径："+ openurl;
@@ -621,13 +711,13 @@ namespace 合同管理
         {
             if (IsMoney(this.textBox1.Text) && IsMoney(this.textBox2.Text))
             {
-                MessageBox.Show("ok");
                 DialogResult dr = openFileDialog1.ShowDialog();
                 //获取所打开文件的文件名
                 string openfilename = openFileDialog1.FileName;
 
                 if (dr == System.Windows.Forms.DialogResult.OK && !string.IsNullOrEmpty(openfilename))
                 {
+                    backup("归档" + this.comboBox1.Text + "合同");
                     string pLocalFilePath = openfilename;//要复制的文件路径
                     string filename1 = System.IO.Path.GetFileName(pLocalFilePath);
 
@@ -686,6 +776,47 @@ namespace 合同管理
                 MessageBox.Show("合同号无效！");
             }
            
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("你确定要取消" + filename + "合同吗？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            if (dr == DialogResult.OK)
+            {
+                contractcanceled(filename);
+
+                showcontractdetailtable("");
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            //
+            MessageBox.Show(link);
+            if (File.Exists(@"contractoutput/"+ link))
+            {
+                if (File.Exists(@"return/" + link))
+                {
+                    try
+                    {
+                        new 合同查看(@"return/" + link, link.Replace(".pdf","")).ShowDialog();
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show("请选择单元格！");
+                    }
+                }
+                else {
+                    try
+                    {
+                        new 合同查看(@"contractoutput/" + link, link.Replace(".pdf", "")).ShowDialog();
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show("请选择单元格！");
+                    }
+                }
+            }
         }
     }
 }

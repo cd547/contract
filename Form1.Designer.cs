@@ -37,6 +37,10 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button15 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
@@ -64,9 +68,7 @@
             this.button8 = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.button16 = new System.Windows.Forms.Button();
+            this.button18 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -128,7 +130,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(400, 17);
+            this.button6.Location = new System.Drawing.Point(629, 17);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(107, 23);
             this.button6.TabIndex = 5;
@@ -142,7 +144,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(6, 17);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(361, 150);
+            this.dataGridView1.Size = new System.Drawing.Size(617, 150);
             this.dataGridView1.TabIndex = 6;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -162,6 +164,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button18);
+            this.tabPage1.Controls.Add(this.button17);
             this.tabPage1.Controls.Add(this.button16);
             this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.textBox3);
@@ -184,6 +188,45 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "合同实例";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button17
+            // 
+            this.button17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button17.BackColor = System.Drawing.Color.Red;
+            this.button17.ForeColor = System.Drawing.SystemColors.Control;
+            this.button17.Location = new System.Drawing.Point(989, 353);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(92, 48);
+            this.button17.TabIndex = 20;
+            this.button17.Text = "取消合同";
+            this.button17.UseVisualStyleBackColor = false;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(1040, 16);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(54, 23);
+            this.button16.TabIndex = 19;
+            this.button16.Text = "搜索";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(881, 21);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(53, 12);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "合同号：";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(934, 17);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(100, 21);
+            this.textBox3.TabIndex = 17;
             // 
             // panel1
             // 
@@ -313,9 +356,9 @@
             // 
             this.button13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button13.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button13.Location = new System.Drawing.Point(989, 127);
+            this.button13.Location = new System.Drawing.Point(989, 111);
             this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(92, 58);
+            this.button13.Size = new System.Drawing.Size(92, 41);
             this.button13.TabIndex = 11;
             this.button13.Text = "打印合同";
             this.button13.UseVisualStyleBackColor = true;
@@ -326,9 +369,9 @@
             this.button12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button12.Enabled = false;
             this.button12.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button12.Location = new System.Drawing.Point(989, 201);
+            this.button12.Location = new System.Drawing.Point(989, 169);
             this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(92, 58);
+            this.button12.Size = new System.Drawing.Size(92, 41);
             this.button12.TabIndex = 10;
             this.button12.Text = "归档合同";
             this.button12.UseVisualStyleBackColor = true;
@@ -339,9 +382,9 @@
             this.button11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button11.Enabled = false;
             this.button11.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button11.Location = new System.Drawing.Point(989, 275);
+            this.button11.Location = new System.Drawing.Point(989, 227);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(92, 58);
+            this.button11.Size = new System.Drawing.Size(92, 41);
             this.button11.TabIndex = 8;
             this.button11.Text = "察看合同";
             this.button11.UseVisualStyleBackColor = true;
@@ -378,7 +421,7 @@
             this.button7.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button7.Location = new System.Drawing.Point(989, 53);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(92, 58);
+            this.button7.Size = new System.Drawing.Size(92, 41);
             this.button7.TabIndex = 5;
             this.button7.Text = "创建合同";
             this.button7.UseVisualStyleBackColor = true;
@@ -458,31 +501,18 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // textBox3
+            // button18
             // 
-            this.textBox3.Location = new System.Drawing.Point(934, 17);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 21);
-            this.textBox3.TabIndex = 17;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(881, 21);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 12);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "合同号：";
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(1040, 16);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(54, 23);
-            this.button16.TabIndex = 19;
-            this.button16.Text = "搜索";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
+            this.button18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button18.Enabled = false;
+            this.button18.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button18.Location = new System.Drawing.Point(989, 284);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(92, 41);
+            this.button18.TabIndex = 21;
+            this.button18.Text = "关联合同";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
             // Form1
             // 
@@ -547,6 +577,8 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Button button16;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button18;
     }
 }
 
